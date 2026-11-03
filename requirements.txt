@@ -1,2 +1,16 @@
+# Versões fixadas: todas foram instaladas e testadas junta. Sem versão fixa, uma
+# instalação nova pode trazer uma versão maior de alguma  e quebrar o 
+# projeto numa máquina e não na outra.
+
 fastapi 
-uvicorn[standard]
+uvicorn[standard]==0.52.4
+sqlalchemy==2.0.52
+psycopg[binary]         # driver do PostgreSQL
+pydantic[email]==2.13.5
+python-dotenv==1.2.3
+bcrypt==5.0.0         # hash da senha
+PyJWT==2.15.1 # tokens de autenticação
+
+# Somente para desenvolvimento e teste
+pytest==9.1.1
+httpx==0.28.1
