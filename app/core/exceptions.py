@@ -57,6 +57,6 @@ class CredenciaisInvalidas(NaoAutenticado):
     """E-mail inexistente ou senha incorreta."""
     mensagem = "E-mail ou senha incorretos."
 
-class TokensInvalidos(NaoAutenticado):
+class TokenInvalido(NaoAutenticado):
     """Tokens de acesso ausente, expirado, adulterado ou de usuário removido."""
     mensagem = "Sessão inválida. Entre novamente."

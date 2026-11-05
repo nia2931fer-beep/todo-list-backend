@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
-from app.core.exceptions import TokensInvalidos
+from app.core.exceptions import TokenInvalido
 #  O bcrypt só considera os primeirs 72 BYTES a senha (e a versão 5 recusa
 # senhas maiores). EM UTF-8 um caractere acentuado acupa 2 bytes, então o limite 
 # é conferido em bytes, não em caracteres = ver `shemas.usuarioCreate`.
@@ -67,6 +67,6 @@ class TokenJWT:
             )
             return int(conteudo["sub"])
         except jwt.ExpiredSignatureError as erro:
-            raise TokensInvalidos("Sessão expirada. Entre novamente.") from erro
+            raise TokenInvalido("Sessão expirada. Entre novamente.") from erro
         except (jwt.InvalidTokenError, ValueError) as erro:
-            raise TokensInvalidos() from erro
+            raise TokenInvalido() from erro

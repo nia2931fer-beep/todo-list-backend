@@ -20,9 +20,10 @@ from app.db.database import criar_tabelas
 STATUS_POR_ERRO: tuple[tuple[type[ErroDeDominio], int], ...] = (
     (RecursoNaoEncontrado, 404),
     (EmailJaCadastrado, 409),
+    (NaoAutenticado, 401),
     (RegraDeNegocioViolada, 422),
     (ErroDeDominio, 400),
-    (NaoAutenticado, 401),
+    
 )
  
 @asynccontextmanager
@@ -35,7 +36,7 @@ async def ciclo_de_vida(_app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(
     title="Todo List API",
     description="Backend do ToDo List — curso Desenvolvedor Full Stack (SENAC).",
-    version="0.3.0",
+    version="0.5.0",
     lifespan=ciclo_de_vida,  # liga o ciclo de vida à aplicação
 )
  
@@ -52,7 +53,10 @@ async def tratar_erro_dominio(
     codigo = next(
         (codigo for tipo, codigo in STATUS_POR_ERRO if isinstance(excecao, tipo)), 400
     )
-    return JSONResponse(status_code=codigo, content={"detail": excecao.mensagem})
+    cabecalhos = {"WWW-Authenticate": "Bearer"} if codigo == 401 else None
+    return JSONResponse(
+        status_code=codigo, content={"detail": excecao.mensagem}, headers=cabecalhos
+        )
 def _mensagem_de_validacao(erro: dict[str, Any]) -> tuple[str, str]:
     """Traduzir um erro do Pydantic em (campo, mensagem em português)."""
     campo = str(erro["loc"][-1]) if erro.get("loc") else "dados"
