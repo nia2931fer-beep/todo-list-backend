@@ -6,7 +6,8 @@ normaliza o próprio e-mail e só aceita a senha em forma de hash.
  
 # Importar as entidades aqui registra as tabelas no SQLAlchemy (é o que
 # `criar_tabelas()` usa) e permite escrever `from app.models import Usuario`.
+from app.models.tarefa import Tarefa
 from app.models.usuario import Usuario
  
 # __all__ lista o que o pacote oferece a quem o importa.
-__all__ = ["Usuario"]
+__all__ = ["Tarefas", "Usuario"]

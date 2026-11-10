@@ -16,7 +16,7 @@ def _opcoes_do_engine(url: str) -> dict[str, Any]:
     return {"pool_pre_ping": True}
 _url = obter_configuracao().url_banco
 engine = create_engine(_url, echo=False, **_opcoes_do_engine(_url))
-SessionLocal = sessionmaker(bind=engine, autoflush=False)
+SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
 def criar_tabelas() -> None:
     """Criar as tabelas do banco de dados, caso não existam.

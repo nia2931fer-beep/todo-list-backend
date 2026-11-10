@@ -14,9 +14,9 @@ from app.core.config import obter_configuracao
 from app.core.exceptions import NaoAutenticado
 from app.core.security import HashBcrypt, HashDeSenha, TokenJWT
 from app.db.database import obter_sessao
-from app.models import usuario
-from app.repositories import UsuarioRepositorio
-from app.services import UsuarioServico
+from app.models import Usuario
+from app.repositories import TarefaRepositorio, UsuarioRepositorio
+from app.services import TarefaServico, UsuarioServico
  
 _esquema_bearer = HTTPBearer(auto_error=False, description="Token recebido no login")
  
@@ -42,6 +42,11 @@ def obter_usuario_servico(
     # Monta as peças, uma dentro da outra.
     return UsuarioServico(UsuarioRepositorio(sessao), hasher, tokens)
 
+def obter_atrefa_servico(
+        sessao: Session = Depends(obter_sessao),
+) -> TarefaServico:
+    """Serviço de tarefa, com o repositório de que depende."""
+    return TarefaServico(TarefaRepositorio(sessao))
 def obter_usuario_atual(
         credenciais: Annotated[
             HTTPAuthorizationCredentials | None, Depends(_esquema_bearer)

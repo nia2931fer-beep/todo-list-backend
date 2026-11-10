@@ -53,7 +53,7 @@ class TokenJWT:
         conteudo = {"sub": str(usuário_id), "exp": expira_em}
         valor = jwt.encode(conteudo, self._segredo, algorithm=self.ALGORITIMO)
         return TokensEmitido(valor=valor, expira_em=expira_em)
-    def ler(self, tokn: str) -> int:
+    def ler(self, token: str) -> int:
         """Confere assinatura e validade e devolve o id do usuário.
         Raises:
             TokensInvalido: token expirado, adulterado ou malformado.

@@ -1,14 +1,17 @@
 """Entidade Usuario: representa um usuário do sistema, com nome, e-mail e senha (em hash)."""
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from sqlalchemy import Column, DateTime, Integer, String
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, validates
 from app.core.datas import agora_utc
 from app.core.exceptions import ValorInvalido
 from app.core.security import HashDeSenha
 from app.db.database import Base
- 
+
+if TYPE_CHECKING: #só para anotações de tipo; evita importações circulares
+    from app.models.tarefa import Tarefa
 class Usuario(Base):
-    """Usuário do sistema."""
+    """Usuários do sistema."""
  
     # Nome da tabela no banco de dados.
     __tablename__ = "usuarios"
@@ -25,7 +28,11 @@ class Usuario(Base):
  
     # default=agora_utc: preenchido sozinho com a data/hora atual ao gravar.
     criado_em = Column(DateTime(timezone=True), nullable=False, default=agora_utc)
- 
+    tarefas = relationship(
+        "Tarefa",
+        back_populates="usuario",
+        cascade="all, delete-orphan",
+    )
     def __init__(self, *, nome: str, email: str) -> None:
         """Cria um usuário ainda sem senha definida. """
         # O "*" obriga a passar nome= e email= pelo nome. Não há parâmetro de senha.

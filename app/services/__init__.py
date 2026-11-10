@@ -6,9 +6,11 @@ não conhece HTTP: não importa `fastapi`, não devolve códigos de status. O
 mesmo serviço funcionaria em um programa de terminal.
 """
  
+from app.services.tarefa import TarefaServico
 from app.services.usuario import Sessao, UsuarioServico
  
 __all__ = [
     "Sessao",
+    "TarefaServico",
     "UsuarioServico",
 ]

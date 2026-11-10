@@ -33,6 +33,9 @@ class RegraDeNegocioViolada(ErroDeDominio):
 
     mensagem = "Operação recusada por uma regra de negócio"
 
+class TituloObrigatorio(RegraDeNegocioViolada):
+    mensagem = "O título da tarrefa não pode ficar vazio."
+
 class ValorInvalido(RegraDeNegocioViolada):
     """Valor fora do conjunto aceito por um campo do domínio."""
 
@@ -55,7 +58,7 @@ class NaoAutenticado(ErroDeDominio):
 
 class CredenciaisInvalidas(NaoAutenticado):
     """E-mail inexistente ou senha incorreta."""
-    mensagem = "E-mail ou senha incorretos."
+    mensagem = "E-mail ou senha incorretos." #401
 
 class TokenInvalido(NaoAutenticado):
     """Tokens de acesso ausente, expirado, adulterado ou de usuário removido."""
