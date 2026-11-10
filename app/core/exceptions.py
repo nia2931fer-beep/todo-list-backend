@@ -25,6 +25,9 @@ class RecursoNaoEncontrado(ErroDeDominio):
 class UsuarioNaoEncontrado(RecursoNaoEncontrado):
     mensagem = "Usuário não encontrado."
 
+class TarefaNaoEncontrada(RecursoNaoEncontrado):
+    mensagem = "Tarefa não encontrada."
+
 #===================================================================================
 # Regra de negócio violada - a camada HTTP traduz esta família em 422
 #===================================================================================
