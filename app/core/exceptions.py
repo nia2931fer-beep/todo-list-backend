@@ -66,3 +66,7 @@ class CredenciaisInvalidas(NaoAutenticado):
 class TokenInvalido(NaoAutenticado):
     """Tokens de acesso ausente, expirado, adulterado ou de usuário removido."""
     mensagem = "Sessão inválida. Entre novamente."
+
+class AcessoNaoEncontrado(ErroDeDominio):
+    """Tentaiva de mexer em uma tarefa que pertence a outro usuário."""
+    mensagem = "Esta tarefa pertence a outro usuário."
