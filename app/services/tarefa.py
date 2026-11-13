@@ -5,16 +5,17 @@ from typing import Any
 from app.core.exceptions import AcessoNaoEncontrado, TarefaNaoEncontrada
 from app.models import Tarefa
 from app.models.enums import PrioridadeTarefa, StatusTarefa
-from app.repositories import TarefaRepositorio
+from app.repositories import FiltroDeTarefa, TarefaRepositorio
 
 NAO_INFORMADO: Any = object()
 @dataclass(frozen=True)
 class AlteracoesDaTarefa:
     """Campos que um PATCH pediu para alterar."""
     titulo: Any = NAO_INFORMADO
+    status: Any = NAO_INFORMADO
     prioridade: Any = NAO_INFORMADO
     prazo: Any = NAO_INFORMADO
-    status: Any = NAO_INFORMADO
+    
     def informado(self, campo: str) -> bool:
         """Informa se o cliente enviou este campo."""
         return getattr(self, campo) is not NAO_INFORMADO
@@ -22,16 +23,14 @@ class AlteracoesDaTarefa:
 class TarefaServico:
     """Operações sobre as tarefas do usuário autenticado.
     """
-
     def __init__(self, tarefa: TarefaRepositorio) -> None:
         self._tarefa = tarefa
-
     def criar(
             self,
-            usuario_id: int,
-            titulo: str,
-            prioridade: PrioridadeTarefa,
-            prazo: date | None,
+        usuario_id: int,
+        titulo: str,
+        prioridade: PrioridadeTarefa,
+        prazo: date | None,
     ) -> Tarefa:
         """Criar uma tarefa para o usuário autenticado.
         """
@@ -43,9 +42,9 @@ class TarefaServico:
         )
         return self._tarefa.salvar(tarefa)
     
-    def listar(self, usuario_id: int) -> list[Tarefa]:
+    def listar(self, filtro: FiltroDeTarefa) -> list[Tarefa]:
         """Lista as tarefas do usuário autenticado."""
-        return self._tarefa.listar(usuario_id)
+        return self._tarefa.listar(filtro)
     
     def buscar(self, tarefa_id: int, usuario_id: int) -> Tarefa:
         """Devolve uma tarefa do usuário.         """

@@ -1,6 +1,9 @@
+from datetime import date
 from typing import Annotated
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 from app.api.dependencies import UsuarioAtual, obter_atrefa_servico
+from app.models.enums import PrioridadeTarefa, StatusTarefa
+from app.repositories import FiltroDeTarefa
 from app.schemas.tarefa import TarefaCreate, TarefaOut, TarefaUpdate
 from app.services import AlteracoesDaTarefa, TarefaServico
 
@@ -36,13 +39,35 @@ def criar_task(dados: TarefaCreate, usuario: UsuarioAtual, servico: Servico) -> 
 @router.get(
     "",
     response_model=list[TarefaOut],
-    summary="Listar as tarefas do usuário",
+    summary="Listar as tarefas do usuário logado.",
 )
-def listar_task(usuario: UsuarioAtual, servico: Servico, response: Response) -> list[TarefaOut]:
+def listar_task(
+
+    usuario: UsuarioAtual,
+    servico: Servico,
+    response: Response,
+    status_tarefa: Annotated[StatusTarefa | None, Query(alias="status")] = None,
+    prioridade: Annotated[PrioridadeTarefa | None, Query()] = None,
+    prazo_ate: Annotated[
+        date | None,
+        Query(alias="prazoAte", description="Somente tarefas com prazo até estar data"),
+    ] = None,
+    busca: Annotated[
+        str | None,
+        Query(max_length=200, description="Texto contido no título(sem diferenciar maiúsculas)"),
+    ] = None,
+    ) -> list[TarefaOut]:
     """Listar as tarefas do usuário logado, das mais recentes para as mais antigas.
     """
-    tarefas = servico.listar(usuario.id)
-    response.headers["x-Total-Count"] = str(len(tarefas))
+    filtro = FiltroDeTarefa(
+        usuario_id=usuario.id,
+        status=status_tarefa,
+        prioridades=prioridade,
+        prazo_ate=prazo_ate,
+        busca=(busca or "").strip() or None,
+    )
+    tarefas = servico.listar(filtro)
+    response.headers["X-Total-Count"] = str(len(tarefas))
     return tarefas
 
 @router.get(
