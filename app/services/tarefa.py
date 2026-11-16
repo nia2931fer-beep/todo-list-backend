@@ -5,7 +5,7 @@ from typing import Any
 from app.core.exceptions import AcessoNaoEncontrado, TarefaNaoEncontrada
 from app.models import Tarefa
 from app.models.enums import PrioridadeTarefa, StatusTarefa
-from app.repositories import FiltroDeTarefa, TarefaRepositorio
+from app.repositories import FiltroDeTarefa, PaginaDeTarefas, TarefaRepositorio
 
 NAO_INFORMADO: Any = object()
 @dataclass(frozen=True)
@@ -26,7 +26,7 @@ class TarefaServico:
     def __init__(self, tarefa: TarefaRepositorio) -> None:
         self._tarefa = tarefa
     def criar(
-            self,
+        self,
         usuario_id: int,
         titulo: str,
         prioridade: PrioridadeTarefa,
@@ -42,7 +42,7 @@ class TarefaServico:
         )
         return self._tarefa.salvar(tarefa)
     
-    def listar(self, filtro: FiltroDeTarefa) -> list[Tarefa]:
+    def listar(self, filtro: FiltroDeTarefa) -> PaginaDeTarefas:
         """Lista as tarefas do usuário autenticado."""
         return self._tarefa.listar(filtro)
     
@@ -56,7 +56,7 @@ class TarefaServico:
         return tarefa
     
     def atualizar(
-            self, tarefa_id: int, usuario_id: int, alteracoes: AlteracoesDaTarefa
+        self, tarefa_id: int, usuario_id: int, alteracoes: AlteracoesDaTarefa
     ) -> Tarefa:
         """Aplica as alterações informadas e devolve a tarefa atualizada. """
         tarefa = self .buscar(tarefa_id, usuario_id)

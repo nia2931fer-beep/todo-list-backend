@@ -2,7 +2,7 @@ from datetime import date
 from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Response, status
 from app.api.dependencies import UsuarioAtual, obter_atrefa_servico
-from app.models.enums import PrioridadeTarefa, StatusTarefa
+from app.models.enums import CampoOrdenacao, Ordem, PrioridadeTarefa, StatusTarefa
 from app.repositories import FiltroDeTarefa
 from app.schemas.tarefa import TarefaCreate, TarefaOut, TarefaUpdate
 from app.services import AlteracoesDaTarefa, TarefaServico
@@ -56,6 +56,12 @@ def listar_task(
         str | None,
         Query(max_length=200, description="Texto contido no título(sem diferenciar maiúsculas)"),
     ] = None,
+    ordenar_por: Annotated[
+        CampoOrdenacao, Query(alias="ordenorPor")
+    ] = CampoOrdenacao.CRIADO_EM,
+    ordem: Annotated[Ordem, Query()] = Ordem.DESC,
+    limite: Annotated[int, Query(ge=1, le=1000, alias="limit")] = 100,
+    deslocamento: Annotated[int, Query(ge=0, alias="offset")] =0,
     ) -> list[TarefaOut]:
     """Listar as tarefas do usuário logado, das mais recentes para as mais antigas.
     """
@@ -65,10 +71,14 @@ def listar_task(
         prioridades=prioridade,
         prazo_ate=prazo_ate,
         busca=(busca or "").strip() or None,
+        ordenar_por=ordenar_por,
+        ordem=ordem,
+        limite=limite,
+        deslocamento=deslocamento,
     )
-    tarefas = servico.listar(filtro)
-    response.headers["X-Total-Count"] = str(len(tarefas))
-    return tarefas
+    pagina = servico.listar(filtro)
+    response.headers["X-Total-Count"] = str(pagina.total)
+    return pagina.tarefas
 
 @router.get(
     "/{tarefa_id}",

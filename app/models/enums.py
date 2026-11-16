@@ -22,7 +22,7 @@ class PrioridadeTarefa(str, Enum):
 
     BAIXA = "baixa"
     MEDIA = "media"
-    ALTA = "alte"
+    ALTA = "alta"
     URGENTE = "urgente"
     @property
     def peso(self) -> int:
@@ -34,9 +34,29 @@ class PrioridadeTarefa(str, Enum):
     @classmethod
     def mapa_de_pesos(cls)  -> dict[str, int]:
         """Mapa `valor -> peso`, no formato que o `case()` so SQL consome."""
+        return {prioridade.value: prioridade.peso for prioridade in cls}
 _PESOS = {
     PrioridadeTarefa.URGENTE: 0,
     PrioridadeTarefa.ALTA: 1,
     PrioridadeTarefa.MEDIA: 2,
     PrioridadeTarefa.BAIXA: 3,
 }
+class CampoOrdenacao(str, Enum):
+    """Campos polos quais a listagem de tarefas pode ser ordenada.
+    
+    Os valores repetem o nome público do compo na API (camelCase), porque é 
+    isso que o cliente envia em `?ordenarPor=`. Como é um enum, um valor fora 
+    da lista pass a ser recusado com 244 - antes, o código caía 
+    silenciosamente na ordenaçao por data de criação e o cliente nunca sabia 
+    que seu parâmetro havia sido ignorado.
+    """
+
+    CRIADO_EM = "criadoEm"
+    PRAZO = "prazo"
+    PRIORIDADE = "prioridade"
+
+class Ordem(str, Enum):
+    """Sentido da ordenação."""
+
+    ASC = "asc"
+    DESC = "desc"

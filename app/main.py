@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse 
 from app.api.routers import tasks, usuario
 from app.core.config import obter_configuracao
@@ -39,10 +40,19 @@ async def ciclo_de_vida(_app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(
     title="Todo List API",
     description="Backend do ToDo List — curso Desenvolvedor Full Stack (SENAC).",
-    version="0.10.0",
+    version="0.11.0",
     lifespan=ciclo_de_vida,  # liga o ciclo de vida à aplicação
 )
- 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=list(obter_configuracao().origens_permitidas),
+    allow_credentials=False, # o token vai no cabeçalho, não em cookie
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["X-Total_count"],
+)
+
 @app.exception_handler(ErroDeDominio)
 async def tratar_erro_dominio(
       _request: Request, excecao: ErroDeDominio
@@ -88,7 +98,7 @@ def _mensagem_de_validacao(erro: dict[str, Any]) -> tuple[str, str]:
     return campo, mensagem.get(tipo, f"Valor Inválido em '{campo}'.")
 @app.exception_handler(RequestValidationError)
 async def tratar_erro_de_validacao(
-    request: Request, excecao: RequestValidationError
+    _request: Request, excecao: RequestValidationError
 ) -> JSONResponse:
     """Traduz erros de validação do ptdantic em respostas HTTP 422. """
     erros = [

@@ -5,11 +5,12 @@ pede a um repositório.
 """
  
 from app.repositories.base import RepositorioBase
-from app.repositories.tarefa import FiltroDeTarefa, TarefaRepositorio
+from app.repositories.tarefa import FiltroDeTarefa, PaginaDeTarefas, TarefaRepositorio
 from app.repositories.usuario import UsuarioRepositorio
  
 __all__ = [
     "FiltroDeTarefa",
+    "PaginaDeTarefas",
     "RepositorioBase",
     "TarefaRepositorio",
     "UsuarioRepositorio",
