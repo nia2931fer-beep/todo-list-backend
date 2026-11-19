@@ -20,6 +20,15 @@ class AlteracoesDaTarefa:
         """Informa se o cliente enviou este campo."""
         return getattr(self, campo) is not NAO_INFORMADO
     
+@dataclass(frozen=True)
+class Resumo:
+    """Os números do painel de um usuário. """
+
+    total: int
+    pendente: int
+    concluida: int
+    atrasada: int
+    
 class TarefaServico:
     """Operações sobre as tarefas do usuário autenticado.
     """
@@ -62,13 +71,31 @@ class TarefaServico:
         tarefa = self .buscar(tarefa_id, usuario_id)
         if alteracoes.informado("titulo"):
             tarefa.titulo = alteracoes.titulo
+
         if alteracoes.informado("prioridade"):
             tarefa.prioridade = alteracoes.prioridade
+
         if alteracoes.informado("prazo"):
             tarefa.prazo = alteracoes.prazo
+
         if alteracoes.informado("status"):
             tarefa.definir_status(StatusTarefa(alteracoes.status))
+
         return self._tarefa.salvar(tarefa)
+    
     def remover(self, tarefa_id: int, usuario_id: int) -> None:
         """Remover a tarefa definitivamente."""
         self._tarefa.remover(self.buscar(tarefa_id, usuario_id))
+
+    def resumo(self, usuario_id: int, hoje: date | None = None) -> Resumo:
+        """Calcula os números do Painel: total, pendente, concluída e atrasada."""
+        hoje = hoje or date.today()
+        tarefas = self._tarefa.todas_do_usuario(usuario_id)
+        concluidas = sum(1 for t in tarefas if t.status is StatusTarefa.CONCLUIDA)
+
+        return Resumo(
+            total=len(tarefas),
+            pendente=len(tarefas) - concluidas,
+            concluida=concluidas,
+            atrasada=sum(1 for t in tarefas if t.esta_atrasada(hoje)),
+        )

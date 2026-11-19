@@ -29,3 +29,16 @@ class TarefaOut(EsquemaDeSaida):
     criado_em: DataHoraUTC
     atualizado_em: DataHoraUTC
     concluido_em: DataHoraUTC | None
+
+# ---------------------------------------------------------------------------------------
+class ResumoOut(EsquemaDeSaida):
+    """Números do Painel, calculados no servidor. 
+    
+    As análises da página Analytics têm o seu proprio contrato, em
+    `schemas/analytics.py0`.
+    """
+
+    total: int
+    pendente: int
+    concluida: int
+    atrasada: int

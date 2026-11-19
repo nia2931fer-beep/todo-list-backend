@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query, Response, status
 from app.api.dependencies import UsuarioAtual, obter_atrefa_servico
 from app.models.enums import CampoOrdenacao, Ordem, PrioridadeTarefa, StatusTarefa
 from app.repositories import FiltroDeTarefa
-from app.schemas.tarefa import TarefaCreate, TarefaOut, TarefaUpdate
+from app.schemas.tarefa import ResumoOut, TarefaCreate, TarefaOut, TarefaUpdate
 from app.services import AlteracoesDaTarefa, TarefaServico
 
 router = APIRouter(
@@ -79,6 +79,15 @@ def listar_task(
     pagina = servico.listar(filtro)
     response.headers["X-Total-Count"] = str(pagina.total)
     return pagina.tarefas
+
+@router.get(
+        "/resumo",
+        response_model=ResumoOut,
+        summary="Resumo para o Painel",
+)
+def resumo_tesk(usuario:UsuarioAtual, servico: Servico) -> ResumoOut:
+    """Total, pendentes, concluídas e atrasadas - os números da página Painel."""
+    return servico.resumo(usuario.id)
 
 @router.get(
     "/{tarefa_id}",
